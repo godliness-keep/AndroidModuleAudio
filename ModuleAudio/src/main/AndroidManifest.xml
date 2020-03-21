@@ -1,0 +1,12 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.longrise.android.moduleaudio">
+
+    <application>
+
+        <service
+            android:name="com.longrise.android.moduleaudio.audio.service.AudioService"
+            android:exported="false" />
+
+    </application>
+
+</manifest>

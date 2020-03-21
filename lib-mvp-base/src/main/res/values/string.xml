@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="lib_mvp_string_loading_error">页面加载失败，请尝试刷新页面</string>
+    <string name="lib_mvp_string_error_reset">点击刷新</string>
+    <string name="lib_mvp_string_loading_empty">暂无数据</string>
+    <string name="lib_mvp_string_loading_no_network">您的网络未连接，请检查网络设置</string>
+</resources>

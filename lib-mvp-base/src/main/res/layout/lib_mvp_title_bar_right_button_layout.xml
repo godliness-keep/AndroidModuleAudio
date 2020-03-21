@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_right_title_bar_lib_mvp"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/tv_right_lib_mvp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="@drawable/lib_mvp_selector_default"
+        android:gravity="center"
+        android:maxLength="2"
+        android:maxLines="1"
+        android:minWidth="40dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:textColor="@color/colorTextPrimaryDark"
+        android:textSize="14sp"
+        android:visibility="gone" />
+
+    <ImageButton
+        android:id="@+id/iv_right_lib_mvp"
+        android:layout_width="40dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/lib_mvp_selector_default"
+        android:src="@drawable/lib_mvp_title_bar_ic_back"
+        android:visibility="gone" />
+
+</LinearLayout>

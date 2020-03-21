@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#EFEFEF</color>
+    <color name="colorPrimaryDark">#BDBDBD</color>
+    <color name="colorAccent">#F2A900</color>
+
+    <color name="colorTextPrimary">#333333</color>
+    <color name="colorTextPrimaryDark">#666666</color>
+    <color name="colorBaseLine">#19000000</color>
+
+    <color name="lib_mvp_color_ff">#FFFFFF</color>
+</resources>

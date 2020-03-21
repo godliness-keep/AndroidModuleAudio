@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.godliness.android.moduleaudiodemo.weight.AudioSlideView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/audio_slide_view_modulestudy"
+    android:layout_width="50dp"
+    android:layout_height="50dp">
+
+    <com.godliness.android.moduleaudiodemo.weight.view.CircleProgressView
+        android:id="@+id/audio_circle_progress_view_modulestudy"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="4dp"
+        android:background="@drawable/modulestudy_shape_sound_chart_view" />
+
+    <com.godliness.android.moduleaudiodemo.weight.SoundChartView
+        android:layout_width="28dp"
+        android:layout_height="12dp"
+        android:layout_gravity="center" />
+
+</com.godliness.android.moduleaudiodemo.weight.AudioSlideView>
