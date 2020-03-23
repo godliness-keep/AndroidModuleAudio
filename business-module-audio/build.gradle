@@ -16,7 +16,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+}
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
@@ -29,5 +34,6 @@ dependencies {
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.0'
     implementation 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.0'
     implementation 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.0'
-    //-----------------MVP组件库
+
+    implementation project(':lib-mvp-base')
 }

@@ -1,2 +1,3 @@
 include ':app',
-        ':ModuleAudio'
+        ':business-module-audio',
+        ':lib-mvp-base'
