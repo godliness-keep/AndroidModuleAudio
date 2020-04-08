@@ -27,6 +27,8 @@ abstract class DelegateLifecycle extends BaseDelegate implements Application.Act
 
     protected abstract void onAudioTargetIntoFinish();
 
+    protected abstract void onAudioTargetIntoDestroy();
+
     @Override
     public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
     }
@@ -66,8 +68,11 @@ abstract class DelegateLifecycle extends BaseDelegate implements Application.Act
 
     @Override
     public void onActivityDestroyed(Activity activity) {
-        if (!mRemovedLifecycle && isAudioTarget(activity)) {
-            unregisterActivityLifecycleCallbacks();
+        if (isAudioTarget(activity)) {
+            if (!mRemovedLifecycle) {
+                unregisterActivityLifecycleCallbacks();
+            }
+            onAudioTargetIntoDestroy();
         }
         release();
     }

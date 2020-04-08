@@ -15,7 +15,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  *
  * @author godliness
  */
-public final class AudioDelegate extends BaseAudioDelegate<AudioDemo2Activity> {
+public final class AudioDelegate extends BaseAudioDelegate<AudioDemoActivity> {
 
     private static final String TAG = "AudioDelegate";
 

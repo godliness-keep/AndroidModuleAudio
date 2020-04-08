@@ -1,4 +1,4 @@
-package com.godliness.android.moduleaudiodemo.base;
+package com.godliness.android.moduleaudiodemo.demo2;
 
 import android.content.ComponentName;
 import android.content.Context;

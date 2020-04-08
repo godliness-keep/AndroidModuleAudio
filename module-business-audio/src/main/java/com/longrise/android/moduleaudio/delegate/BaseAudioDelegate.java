@@ -25,6 +25,7 @@ import java.util.Locale;
  *
  * @author godliness
  */
+@SuppressWarnings({"unused", "WeakerAccess"})
 public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements OnAudioProgressListener, OnAudioStateListener {
 
     private AudioBridge mAudioBridge;
@@ -50,13 +51,19 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
 
     /**
      * Progress of current player
+     *
+     * @param stringForPosition current position
+     * @param duration          resource duration
+     * @param position          current position
      */
     protected abstract void updateAudioProgress(String stringForPosition, String duration, int position);
 
     /**
      * Bind {@link SeekBar} change listener
+     *
+     * @param callback {@link SeekBar.OnSeekBarChangeListener}
      */
-    protected abstract void bindSeekBarChangeListener(SeekBar.OnSeekBarChangeListener seekBarChangeListener);
+    protected abstract void bindSeekBarChangeListener(SeekBar.OnSeekBarChangeListener callback);
 
     /**
      * Can audio be played in the background
@@ -108,10 +115,6 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
         return false;
     }
 
-    public final T getTarget() {
-        return (T) getActivity();
-    }
-
     @Override
     protected final void onAudioTargetIntoResumed() {
         if (mAudioBridge != null) {
@@ -128,14 +131,20 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
 
     @Override
     protected final void onAudioTargetIntoFinish() {
-        if (mAudioBridge != null) {
-            if (canIntoBackground() && mAudioBridge.canIntoBackground()) {
-                audioIntoBackground();
-            }
+        final boolean canIntoBackgroundOfService = mAudioBridge != null && mAudioBridge.canIntoBackground();
+        if (canIntoBackground() && canIntoBackgroundOfService) {
+            audioIntoBackground();
         }
         if (mServiceConnection != null) {
             getActivity().unbindService(mServiceConnection);
             mServiceConnection = null;
+        }
+    }
+
+    @Override
+    protected final void onAudioTargetIntoDestroy() {
+        if (!canIntoBackground()) {
+            connectToAudioServiceCallback(false);
         }
     }
 

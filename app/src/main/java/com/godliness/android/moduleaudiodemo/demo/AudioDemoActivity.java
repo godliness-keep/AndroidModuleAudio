@@ -2,89 +2,60 @@ package com.godliness.android.moduleaudiodemo.demo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.godliness.android.moduleaudiodemo.R;
-import com.godliness.android.moduleaudiodemo.base.BaseAudioActivity;
 import com.godliness.android.moduleaudiodemo.util.AppContext;
-import com.longrise.android.moduleaudio.audio.service.AudioBridge;
-import com.longrise.android.moduleaudio.audio.service.BackgroundAudioOption;
-
-import tv.danmaku.ijk.media.player.IMediaPlayer;
 
 /**
- * Created by godliness on 2020-03-16.
+ * Created by godliness on 2020-04-07.
  *
  * @author godliness
  */
-public final class AudioDemoActivity extends BaseAudioActivity implements View.OnClickListener {
-
-    private static final String TAG = "AudioDemoActivity";
+public final class AudioDemoActivity extends AppCompatActivity implements View.OnClickListener {
 
     private ImageView mPause;
     private TextView mCurrent;
     private TextView mEnd;
     private SeekBar mProgress;
 
-    @Override
-    protected int getLayoutResourceId(@Nullable Bundle savedInstanceState) {
-        AppContext.register(this);
-        return R.layout.moduleaudio_audio_demo;
-    }
+    private String mPath = "http://download.yxybb.com/project/INSH/video/2018/12/19/yp001.mp3";
+
+    private AudioDelegate mDelegate;
 
     @Override
-    protected void initView() {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        AppContext.register(this);
+        setContentView(R.layout.moduleaudio_audio_demo);
+        initView();
+        regEvent(true);
+    }
+
+    private void initView() {
         mPause = findViewById(R.id.moduleaudio_controller_bar_iv_play_portrait);
         mCurrent = findViewById(R.id.moduleaudio_controller_bar_tv_current_portrait);
         mEnd = findViewById(R.id.moduleaudio_controller_bar_tv_end_portrait);
         mProgress = findViewById(R.id.moduleaudio_controller_bar_progress_portrait);
 
-
-        setAudioPath("http://download.yxybb.com/project/INSH/video/2018/12/19/yp001.mp3");
+        mDelegate = new AudioDelegate(this);
+        mDelegate.setAudioPath(mPath);
     }
-
-    @Override
-    protected void regEvent(boolean regEvent) {
-        mPause.setOnClickListener(regEvent ? this : null);
-    }
-
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.moduleaudio_controller_bar_iv_play_portrait) {
-            final AudioBridge bridge = getAudioBridge();
-            if (bridge.isPlaying()) {
-                bridge.pause();
-            } else {
-                bridge.start();
-            }
+        if (mDelegate.isPlaying()) {
+            mDelegate.pause();
+        } else {
+            mDelegate.start();
         }
     }
 
-    @Override
-    protected boolean runIntoBackground() {
-        return true;
-    }
-
-    private final AudioParams mAudioParams = new AudioParams();
-
-    @Override
-    protected void runInBackgroundFromConfiguration(BackgroundAudioOption option) {
-        option.controller(AudioController.class);
-        option.params(mAudioParams);
-    }
-
-    @Override
-    protected void bindSeekBarChangeListener(SeekBar.OnSeekBarChangeListener seekBarChangeListener) {
-        mProgress.setOnSeekBarChangeListener(seekBarChangeListener);
-    }
-
-    @Override
-    protected void onAudioProgress(String position, String duration, int progress) {
+    public void updateAudioProgress(String position, String duration, int progress) {
         if (mCurrent != null) {
             mCurrent.setText(position);
         }
@@ -94,32 +65,24 @@ public final class AudioDemoActivity extends BaseAudioActivity implements View.O
         mProgress.setProgress(progress);
     }
 
-    @Override
-    public void onAudioState(boolean isPlaying) {
+    public void bindSeekbarChangeListener(SeekBar.OnSeekBarChangeListener callback) {
+        mProgress.setOnSeekBarChangeListener(callback);
+    }
+
+    public void updateAudioState(boolean isPlaying) {
         if (mPause != null) {
             mPause.setImageResource(isPlaying ? android.R.drawable.ic_media_pause : android.R.drawable.ic_media_play);
         }
     }
 
     @Override
-    public void onAudioPrepared(IMediaPlayer mp) {
-        Log.e(TAG, "onAudioPrepared");
+    protected void onDestroy() {
+        super.onDestroy();
+        regEvent(false);
+        mDelegate.release();
     }
 
-    @Override
-    public void onAudioCompletion(IMediaPlayer mp) {
-        Log.e(TAG, "onCompletion");
+    private void regEvent(boolean regEvent) {
+        mPause.setOnClickListener(regEvent ? this : null);
     }
-
-    @Override
-    public boolean onAudioError(IMediaPlayer mp, int what, int extra) {
-        Log.e(TAG, "onAudioError");
-        return false;
-    }
-
-    @Override
-    public void onAudioBufferingUpdate(int percent) {
-        mProgress.setSecondaryProgress(percent);
-    }
-
 }

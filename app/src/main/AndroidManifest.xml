@@ -20,11 +20,11 @@
         </activity>
 
         <activity
-            android:name=".demo.AudioDemoActivity"
+            android:name=".demo2.AudioDemoActivity"
             android:screenOrientation="portrait" />
 
         <activity
-            android:name=".demo.AudioDemo2Activity"
+            android:name=".demo.AudioDemoActivity"
             android:screenOrientation="portrait" />
     </application>
 

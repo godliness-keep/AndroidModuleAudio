@@ -63,7 +63,7 @@ public final class AudioController extends BaseAudioController implements View.O
 
     @Override
     protected boolean showController(Activity host) {
-        return !(host instanceof AudioDemo2Activity);
+        return !(host instanceof AudioDemoActivity);
     }
 
     @Override
@@ -105,7 +105,7 @@ public final class AudioController extends BaseAudioController implements View.O
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(v.getContext(), AudioDemo2Activity.class);
+        Intent intent = new Intent(v.getContext(), AudioDemoActivity.class);
         v.getContext().startActivity(intent);
     }
 

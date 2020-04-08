@@ -11,11 +11,11 @@ import android.view.View;
  *
  * @author godliness
  */
-abstract class BaseDelegate {
+abstract class BaseDelegate<T extends Activity> {
 
-    private Activity mTarget;
+    private T mTarget;
 
-    protected BaseDelegate(Activity target) {
+    protected BaseDelegate(T target) {
         this.mTarget = target;
         initDelegate();
         regEvent(true);
@@ -30,7 +30,7 @@ abstract class BaseDelegate {
     }
 
     @NonNull
-    protected final Activity getActivity() {
+    protected final T getActivity() {
         return mTarget;
     }
 
@@ -38,7 +38,7 @@ abstract class BaseDelegate {
         return mTarget.getResources();
     }
 
-    protected final <T extends View> T findViewById(@IdRes int id) {
+    protected final <V extends View> V findViewById(@IdRes int id) {
         return mTarget.findViewById(id);
     }
 }
