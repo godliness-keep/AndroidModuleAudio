@@ -13,38 +13,32 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 public interface OnAudioStateListener {
 
     /**
-     * 是否正在播放
-     *
-     * @param isPlaying true 正在播放
+     * Play state of current player
      */
     void onAudioState(boolean isPlaying);
 
     /**
-     * 初始化完成
+     * Prepared of current player
      */
     void onAudioPrepared(IMediaPlayer mp);
 
     /**
-     * 播放完成
+     * Completion of current player
      */
     void onAudioCompletion(IMediaPlayer mp);
 
     /**
-     * 播放出错
+     * Error of current player
      */
     boolean onAudioError(IMediaPlayer mp, int what, int extra);
 
     /**
-     * 缓冲状态
-     *
-     * @param buffering true 正在缓冲
+     * Buffering of current player
      */
     void onAudioBuffering(boolean buffering);
 
     /**
-     * 缓冲进度
-     *
-     * @param percent 缓冲进度
+     * Buffering progress of current player
      */
     void onAudioBufferingUpdate(int percent);
 }

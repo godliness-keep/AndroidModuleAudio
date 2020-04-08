@@ -1,4 +1,4 @@
-package com.godliness.android.moduleaudiodemo;
+package com.godliness.android.moduleaudiodemo.demo;
 
 import com.longrise.android.moduleaudio.params.BaseParams;
 
@@ -8,7 +8,6 @@ import com.longrise.android.moduleaudio.params.BaseParams;
  * @author godliness
  */
 public final class AudioParams extends BaseParams {
-
 
     /**定制你的所需参数*/
 }

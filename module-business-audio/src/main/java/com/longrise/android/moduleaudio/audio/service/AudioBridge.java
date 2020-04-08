@@ -25,7 +25,6 @@ public final class AudioBridge extends Binder {
 
     public AudioBridge(AudioService audioService) {
         this.mAudioService = audioService;
-        Log.e(TAG, "new AudioBridge()");
     }
 
     /**
@@ -68,7 +67,7 @@ public final class AudioBridge extends Binder {
     /**
      * 判断音频是否进入后台
      */
-    public boolean audioIntoBackground() {
+    public boolean canIntoBackground() {
         if (mAudioService != null) {
             return mAudioService.audioIntoBackground();
         }

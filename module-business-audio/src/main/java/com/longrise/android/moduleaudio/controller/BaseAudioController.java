@@ -6,7 +6,6 @@ import android.content.Context;
 import android.support.annotation.IdRes;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -162,7 +161,5 @@ public abstract class BaseAudioController extends AudioLifecycle implements OnAu
         final ViewGroup parent = host.findViewById(android.R.id.content);
         inflaterController(parent);
         parent.addView(mControllerView);
-
-        Log.e(TAG, "attachToResumedActivity");
     }
 }

@@ -1,13 +1,13 @@
-package com.longrise.android.moduleaudio;
+package com.longrise.android.moduleaudio.delegate;
 
+
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.widget.SeekBar;
 
@@ -16,68 +16,67 @@ import com.longrise.android.moduleaudio.audio.listener.OnAudioStateListener;
 import com.longrise.android.moduleaudio.audio.service.AudioBridge;
 import com.longrise.android.moduleaudio.audio.service.AudioService;
 import com.longrise.android.moduleaudio.audio.service.BackgroundAudioOption;
-import com.longrise.android.mvp.internal.BaseMvpActivity;
-import com.longrise.android.mvp.internal.mvp.BasePresenter;
 
 import java.util.Formatter;
 import java.util.Locale;
 
 /**
- * Created by godliness on 2020-03-16.
+ * Created by godliness on 2020-04-07.
  *
  * @author godliness
  */
-public abstract class BaseAudioActivity<P extends BasePresenter> extends BaseMvpActivity<P> implements
-        OnAudioProgressListener, OnAudioStateListener {
+public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements OnAudioProgressListener, OnAudioStateListener {
 
     private AudioBridge mAudioBridge;
+    private ServiceConnection mServiceConnection;
+
+    private final StringBuilder mFormatBuilder;
+    private final Formatter mFormatter;
+    private SeekBar.OnSeekBarChangeListener mStateChangeCallback;
+
     private String mCurrentPath;
     private int mPosition;
 
-    private SeekBar.OnSeekBarChangeListener mStateChangeCallback;
-    private ServiceConnection mServiceConnection;
-
-    private StringBuilder mFormatBuilder;
-    private Formatter mFormatter;
+    protected BaseAudioDelegate(Activity target) {
+        super(target);
+        this.mFormatBuilder = new StringBuilder();
+        this.mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+    }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected final void initDelegate() {
         connectToAudioService();
     }
 
     /**
-     * 当前播放进度，该方法相关单位已作转化，如果需要原生进度{@link #onAudioProgress(int, int)}
-     *
-     * @param position 当前进度
-     * @param duration 总长度
-     * @param progress 进度条进度
+     * Progress of current player
      */
-    protected abstract void onAudioProgress(String position, String duration, int progress);
+    protected abstract void updateAudioProgress(String stringForPosition, String duration, int position);
 
     /**
-     * 绑定进度条
-     *
-     * @param seekBarChangeListener SeekBar listener
+     * Bind {@link SeekBar} change listener
      */
     protected abstract void bindSeekBarChangeListener(SeekBar.OnSeekBarChangeListener seekBarChangeListener);
 
     /**
-     * 设置音频地址
-     *
-     * @param path 音频地址
+     * Can audio be played in the background
      */
-    protected void setAudioPath(String path) {
-        setAudioPath(path, 0);
+    protected boolean canIntoBackground() {
+        return false;
     }
 
     /**
-     * 设置音频地址
-     *
-     * @param path     音频地址
-     * @param position 设置断点位置
+     * Configuration audio options when player in the background
      */
-    protected void setAudioPath(String path, int position) {
+    protected void onConfigurationForBackground(@NonNull BackgroundAudioOption audioOption) {
+
+    }
+
+    public final void setAudioPath(String path) {
+        setAudioPath(path, 0);
+    }
+
+    public final void setAudioPath(String path, int position) {
         if (mAudioBridge != null) {
             mAudioBridge.setAudioPath(path, position);
         } else {
@@ -86,100 +85,75 @@ public abstract class BaseAudioActivity<P extends BasePresenter> extends BaseMvp
         }
     }
 
-    /**
-     * 是否需要进入后台音频管理
-     */
-    protected boolean runIntoBackground() {
-        return false;
-    }
-
-    /**
-     * 配置后台音频管理{@link BackgroundAudioOption}
-     */
-    protected void runInBackgroundFromConfiguration(@NonNull BackgroundAudioOption option) {
-    }
-
-    /**
-     * 返回音频控制器桥梁 {@link AudioBridge}
-     */
-    protected final AudioBridge getAudioBridge() {
+    public final AudioBridge getAudioBridge() {
         return mAudioBridge;
     }
 
-    /**
-     * 音频播放进度
-     */
-    @Override
-    public void onAudioProgress(int position, int duration) {
-        if (duration != 0) {
-            onAudioProgress(stringForTime(position), stringForTime(duration), (int) (1000L * position / duration));
+    public final void start() {
+        if (mAudioBridge != null) {
+            mAudioBridge.start();
         }
     }
 
-    /**
-     * 音频缓冲状态
-     */
-    @Override
-    public void onAudioBuffering(boolean buffering) {
+    public final void pause() {
+        if (mAudioBridge != null) {
+            mAudioBridge.pause();
+        }
     }
 
-    /**
-     * 音频缓冲进度
-     */
-    @Override
-    public void onAudioBufferingUpdate(int percent) {
+    public final boolean isPlaying() {
+        if (mAudioBridge != null) {
+            return mAudioBridge.isPlaying();
+        }
+        return false;
+    }
+
+    public final T getTarget() {
+        return (T) getActivity();
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
+    protected final void onAudioTargetIntoResumed() {
         if (mAudioBridge != null) {
             mAudioBridge.addAudioProgressUpdater();
         }
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        if (!isFinishing()) {
-            if (mAudioBridge != null) {
-                mAudioBridge.removeAudioProgressUpdater();
-            }
+    protected final void onAudioTargetIntoPaused() {
+        if (mAudioBridge != null) {
+            mAudioBridge.removeAudioProgressUpdater();
         }
     }
 
     @Override
-    public void finish() {
-        super.finish();
+    protected final void onAudioTargetIntoFinish() {
         if (mAudioBridge != null) {
-            if (runIntoBackground() && mAudioBridge.audioIntoBackground()) {
+            if (canIntoBackground() && mAudioBridge.canIntoBackground()) {
                 audioIntoBackground();
             }
         }
-
         if (mServiceConnection != null) {
-            unbindService(mServiceConnection);
+            getActivity().unbindService(mServiceConnection);
             mServiceConnection = null;
         }
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (!runIntoBackground()) {
-            connectToAudioServiceCallback(false);
+    public final void onAudioProgress(int position, int duration) {
+        if (duration != -1) {
+            updateAudioProgress(stringForTime(position), stringForTime(duration), (int) (1000L * position / duration));
         }
-        mAudioBridge = null;
     }
 
     private void connectToAudioService() {
-        final Intent audioIntent = new Intent(this, AudioService.class);
-        bindService(audioIntent, getServiceConnection(), Context.BIND_AUTO_CREATE);
+        final Intent audioIntent = new Intent(getActivity(), AudioService.class);
+        getActivity().bindService(audioIntent, getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
     private void startAudioService() {
-        final Intent audioIntent = new Intent(this, AudioService.class);
-        startService(audioIntent);
+        final Intent audioIntent = new Intent(getActivity(), AudioService.class);
+        getActivity().startService(audioIntent);
     }
 
     private void connectToAudioServiceCallback(boolean event) {
@@ -191,7 +165,6 @@ public abstract class BaseAudioActivity<P extends BasePresenter> extends BaseMvp
     }
 
     private String stringForTime(int timeMs) {
-        initStringForTime();
         int totalSeconds = timeMs / 1000;
 
         int seconds = totalSeconds % 60;
@@ -207,19 +180,10 @@ public abstract class BaseAudioActivity<P extends BasePresenter> extends BaseMvp
     }
 
     private void audioIntoBackground() {
-        if (runIntoBackground()) {
+        if (canIntoBackground()) {
             final BackgroundAudioOption option = mAudioBridge.getOption();
-            runInBackgroundFromConfiguration(option);
-            option.runInBackground(this);
-        }
-    }
-
-    private void initStringForTime() {
-        if (mFormatBuilder == null) {
-            mFormatBuilder = new StringBuilder();
-        }
-        if (mFormatter == null) {
-            mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+            onConfigurationForBackground(option);
+            option.runInBackground(getActivity());
         }
     }
 
@@ -233,7 +197,7 @@ public abstract class BaseAudioActivity<P extends BasePresenter> extends BaseMvp
                         mAudioBridge.setAudioPath(mCurrentPath, mPosition);
                     }
                     connectToAudioServiceCallback(true);
-                    if (runIntoBackground() && !mAudioBridge.onStart()) {
+                    if (canIntoBackground() && !mAudioBridge.onStart()) {
                         startAudioService();
                     }
                 }

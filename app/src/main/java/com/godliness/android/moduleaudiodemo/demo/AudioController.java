@@ -1,12 +1,12 @@
-package com.godliness.android.moduleaudiodemo;
+package com.godliness.android.moduleaudiodemo.demo;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import com.godliness.android.moduleaudiodemo.R;
 import com.godliness.android.moduleaudiodemo.util.ScreenUnit;
 import com.godliness.android.moduleaudiodemo.weight.AudioSlideView;
 import com.godliness.android.moduleaudiodemo.weight.view.CircleProgressView;
@@ -22,8 +22,6 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  */
 public final class AudioController extends BaseAudioController implements View.OnClickListener {
 
-    private static final String TAG = "AudioController";
-
     private static final int DEFAULT_SIZE = ScreenUnit.dip2px(50);
 
     private AudioSlideView mSlideView;
@@ -36,7 +34,6 @@ public final class AudioController extends BaseAudioController implements View.O
 
     public AudioController(Context cxt) {
         super(cxt);
-        Log.e(TAG, "new AudioController");
     }
 
     @Override
@@ -66,7 +63,7 @@ public final class AudioController extends BaseAudioController implements View.O
 
     @Override
     protected boolean showController(Activity host) {
-        return !(host instanceof AudioDemoActivity);
+        return !(host instanceof AudioDemo2Activity);
     }
 
     @Override
@@ -79,12 +76,10 @@ public final class AudioController extends BaseAudioController implements View.O
         if (mProgressView != null) {
             mProgressView.setProgress(1000 * position / duration);
         }
-        Log.e(TAG, "onAudioProgress:" + position + " duration: " + duration);
     }
 
     @Override
     public void onAudioState(boolean isPlaying) {
-        Log.e(TAG, "onAudioState: " + isPlaying);
     }
 
     @Override
@@ -110,7 +105,7 @@ public final class AudioController extends BaseAudioController implements View.O
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(v.getContext(), AudioDemoActivity.class);
+        Intent intent = new Intent(v.getContext(), AudioDemo2Activity.class);
         v.getContext().startActivity(intent);
     }
 

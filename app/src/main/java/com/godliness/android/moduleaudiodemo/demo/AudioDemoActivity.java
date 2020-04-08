@@ -1,4 +1,4 @@
-package com.godliness.android.moduleaudiodemo;
+package com.godliness.android.moduleaudiodemo.demo;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,8 +8,9 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.godliness.android.moduleaudiodemo.R;
+import com.godliness.android.moduleaudiodemo.base.BaseAudioActivity;
 import com.godliness.android.moduleaudiodemo.util.AppContext;
-import com.longrise.android.moduleaudio.BaseAudioActivity;
 import com.longrise.android.moduleaudio.audio.service.AudioBridge;
 import com.longrise.android.moduleaudio.audio.service.BackgroundAudioOption;
 
