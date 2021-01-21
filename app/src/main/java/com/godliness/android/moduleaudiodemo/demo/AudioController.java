@@ -3,6 +3,7 @@ package com.godliness.android.moduleaudiodemo.demo;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -22,6 +23,8 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
  */
 public final class AudioController extends BaseAudioController implements View.OnClickListener {
 
+    private static final String TAG = "AudioController";
+
     private static final int DEFAULT_SIZE = ScreenUnit.dip2px(50);
 
     private AudioSlideView mSlideView;
@@ -34,6 +37,7 @@ public final class AudioController extends BaseAudioController implements View.O
 
     public AudioController(Context cxt) {
         super(cxt);
+        Log.e(TAG, "new AudioController");
     }
 
     @Override

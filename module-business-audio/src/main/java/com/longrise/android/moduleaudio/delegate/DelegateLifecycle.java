@@ -9,12 +9,12 @@ import android.os.Bundle;
  *
  * @author godliness
  */
-abstract class DelegateLifecycle extends BaseDelegate implements Application.ActivityLifecycleCallbacks {
+abstract class DelegateLifecycle<T extends Activity> extends BaseDelegate<T> implements Application.ActivityLifecycleCallbacks {
 
     private final Application mApp;
     private boolean mRemovedLifecycle;
 
-    DelegateLifecycle(Activity target) {
+    DelegateLifecycle(T target) {
         super(target);
         final Application app = target.getApplication();
         app.registerActivityLifecycleCallbacks(this);
@@ -78,7 +78,7 @@ abstract class DelegateLifecycle extends BaseDelegate implements Application.Act
     }
 
     private boolean isAudioTarget(Activity current) {
-        return getActivity() == current;
+        return getTarget() == current;
     }
 
     private void unregisterActivityLifecycleCallbacks() {

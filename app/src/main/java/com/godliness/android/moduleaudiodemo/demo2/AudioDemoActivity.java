@@ -45,7 +45,7 @@ public final class AudioDemoActivity extends BaseAudioActivity implements View.O
         mProgress = findViewById(R.id.moduleaudio_controller_bar_progress_portrait);
 
 
-        setAudioPath("http://download.yxybb.com/project/INSH/video/2018/12/19/yp001.mp3");
+        setAudioPath("http://aod.cos.tx.xmcdn.com/group31/M02/49/3F/wKgJX1mENtvgCQyFALK6BnBQ4yY825.mp3");
     }
 
     @Override

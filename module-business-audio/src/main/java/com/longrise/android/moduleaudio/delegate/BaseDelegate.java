@@ -30,7 +30,7 @@ abstract class BaseDelegate<T extends Activity> {
     }
 
     @NonNull
-    protected final T getActivity() {
+    protected final T getTarget() {
         return mTarget;
     }
 

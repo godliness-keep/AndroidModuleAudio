@@ -23,7 +23,7 @@ public final class AudioDemoActivity extends AppCompatActivity implements View.O
     private TextView mEnd;
     private SeekBar mProgress;
 
-    private String mPath = "http://download.yxybb.com/project/INSH/video/2018/12/19/yp001.mp3";
+    private String mPath = "http://aod.cos.tx.xmcdn.com/group31/M02/49/3F/wKgJX1mENtvgCQyFALK6BnBQ4yY825.mp3";
 
     private AudioDelegate mDelegate;
 

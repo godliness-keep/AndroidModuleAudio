@@ -1,6 +1,5 @@
 package com.godliness.android.moduleaudiodemo.demo;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.SeekBar;
@@ -21,7 +20,7 @@ public final class AudioDelegate extends BaseAudioDelegate<AudioDemoActivity> {
 
     private final AudioParams mParams = new AudioParams();
 
-    protected AudioDelegate(Activity target) {
+    protected AudioDelegate(AudioDemoActivity target) {
         super(target);
     }
 

@@ -20,25 +20,27 @@ import com.longrise.android.moduleaudio.audio.service.BackgroundAudioOption;
 import java.util.Formatter;
 import java.util.Locale;
 
+import tv.danmaku.ijk.media.player.IMediaPlayer;
+
 /**
  * Created by godliness on 2020-04-07.
  *
  * @author godliness
  */
 @SuppressWarnings({"unused", "WeakerAccess"})
-public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements OnAudioProgressListener, OnAudioStateListener {
+public abstract class BaseAudioDelegate<T extends Activity> extends DelegateLifecycle<T> implements OnAudioProgressListener, OnAudioStateListener {
 
     private AudioBridge mAudioBridge;
     private ServiceConnection mServiceConnection;
 
     private final StringBuilder mFormatBuilder;
     private final Formatter mFormatter;
-    private SeekBar.OnSeekBarChangeListener mStateChangeCallback;
+    private SeekBarChangeCallbackExtend mStateChangeCallback;
 
     private String mCurrentPath;
     private int mPosition;
 
-    protected BaseAudioDelegate(Activity target) {
+    protected BaseAudioDelegate(T target) {
         super(target);
         this.mFormatBuilder = new StringBuilder();
         this.mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
@@ -77,6 +79,13 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
      */
     protected void onConfigurationForBackground(@NonNull BackgroundAudioOption audioOption) {
 
+    }
+
+    @Override
+    public void onAudioPrepared(IMediaPlayer mp) {
+        if (mStateChangeCallback != null) {
+            mStateChangeCallback.updateDuration((int) mp.getDuration());
+        }
     }
 
     public final void setAudioPath(String path) {
@@ -136,7 +145,7 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
             audioIntoBackground();
         }
         if (mServiceConnection != null) {
-            getActivity().unbindService(mServiceConnection);
+            getTarget().unbindService(mServiceConnection);
             mServiceConnection = null;
         }
     }
@@ -150,19 +159,19 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
 
     @Override
     public final void onAudioProgress(int position, int duration) {
-        if (duration != -1) {
+        if (duration > 0) {
             updateAudioProgress(stringForTime(position), stringForTime(duration), (int) (1000L * position / duration));
         }
     }
 
     private void connectToAudioService() {
-        final Intent audioIntent = new Intent(getActivity(), AudioService.class);
-        getActivity().bindService(audioIntent, getServiceConnection(), Context.BIND_AUTO_CREATE);
+        final Intent audioIntent = new Intent(getTarget(), AudioService.class);
+        getTarget().bindService(audioIntent, getServiceConnection(), Context.BIND_AUTO_CREATE);
     }
 
     private void startAudioService() {
-        final Intent audioIntent = new Intent(getActivity(), AudioService.class);
-        getActivity().startService(audioIntent);
+        final Intent audioIntent = new Intent(getTarget(), AudioService.class);
+        getTarget().startService(audioIntent);
     }
 
     private void connectToAudioServiceCallback(boolean event) {
@@ -170,6 +179,7 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
             mAudioBridge.setAudioProgressListener(event ? this : null);
             mAudioBridge.setAudioStateListener(event ? this : null);
         }
+
         bindSeekBarChangeListener(event ? getStateChangeCallback() : null);
     }
 
@@ -192,7 +202,7 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
         if (canIntoBackground()) {
             final BackgroundAudioOption option = mAudioBridge.getOption();
             onConfigurationForBackground(option);
-            option.runInBackground(getActivity());
+            option.runInBackground(getTarget());
         }
     }
 
@@ -222,20 +232,26 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
 
     private SeekBar.OnSeekBarChangeListener getStateChangeCallback() {
         if (mStateChangeCallback == null) {
-            mStateChangeCallback = new SeekBar.OnSeekBarChangeListener() {
+            mStateChangeCallback = new SeekBarChangeCallbackExtend() {
 
                 private int mChangePosition;
+                private int mDuration = -1;
+
+                @Override
+                public void updateDuration(int duration) {
+                    this.mDuration = duration;
+                }
 
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (!fromUser) {
                         return;
                     }
-                    if (mAudioBridge != null) {
-                        final int duration = mAudioBridge.getDuration();
-                        mChangePosition = duration * progress / 1000;
-                        onAudioProgress(mChangePosition, duration);
+                    if (mDuration <= 0) {
+                        mDuration = mAudioBridge.getDuration();
                     }
+                    mChangePosition = mDuration * progress / 1000;
+                    onAudioProgress(mChangePosition, mDuration);
                 }
 
                 @Override
@@ -255,5 +271,13 @@ public abstract class BaseAudioDelegate<T> extends DelegateLifecycle implements 
             };
         }
         return mStateChangeCallback;
+    }
+
+    private interface SeekBarChangeCallbackExtend extends SeekBar.OnSeekBarChangeListener {
+
+        /**
+         * Update duration when resource prepared
+         */
+        void updateDuration(int duration);
     }
 }

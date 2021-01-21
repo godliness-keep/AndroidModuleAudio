@@ -5,16 +5,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.BuildConfig;
+import android.support.v4.util.ArrayMap;
 import android.util.Log;
 
 import com.longrise.android.moduleaudio.audio.listener.OnAudioProgressListener;
 import com.longrise.android.moduleaudio.audio.listener.OnAudioServiceStateListener;
 import com.longrise.android.moduleaudio.audio.listener.OnAudioStateListener;
+
+import java.util.Map;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
@@ -163,7 +167,8 @@ public final class AudioService extends Service implements Handler.Callback, Ijk
             removeUpdateProgressMessage();
             mPlayer.reset();
             mCurrentState = STATE_IDLE;
-            mPlayer.setDataSource(audioPath);
+//            mPlayer.setDataSource(this, Uri.parse(audioPath), createRequestHeaders());
+            mPlayer.setDataSource(this, Uri.parse(audioPath));
             mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mPlayer.prepareAsync();
             mCurrentState = STATE_PREPARING;
@@ -367,6 +372,7 @@ public final class AudioService extends Service implements Handler.Callback, Ijk
     private void createMediaPlayer() {
         if (mPlayer == null) {
             mPlayer = new IjkMediaPlayer();
+            mPlayer.setOption(IjkMediaPlayer.OPT_CATEGORY_FORMAT, "probesize", 1024 * 10);
             regEvent(true);
         }
         if (mAudioManager == null) {
@@ -458,4 +464,14 @@ public final class AudioService extends Service implements Handler.Callback, Ijk
         }
         return mAudioFocusChangeCallback;
     }
+
+//    private Map<String, String> createRequestHeaders() {
+//        // change content type if necessary
+//        Map<String, String> headers = new ArrayMap<>();
+//        headers.put("Content-Type", "audio/*");
+//        headers.put("Accept-Ranges", "bytes");
+//        headers.put("Status", "206");
+//        headers.put("Cache-control", "no-cache");
+//        return headers;
+//    }
 }
